@@ -30,7 +30,7 @@ function App() {
     useEffect(() => {
       if (isOn) {
         setGameStart({
-            ...gameStart, gameStarted: true
+            ...gameStart, onDisplay: true
         })
       }
       else {
@@ -55,11 +55,72 @@ function App() {
 
     const [flashColor, setFlashColor] = useState("");
     
+    useEffect(() => {
+      if (isOn && gameStart.onDisplay && gameStart.colors.length) {
+        displayColors();
+      }
+    }, [isOn, gameStart.onDisplay, gameStart.colors.length]);
+    
 
   const [header, setHeader] = useState("PRESS ANY KEY TO START")
 
+  async function displayColors() {
+    await timeout(1000);
+    for (let i = 0; i < gameStart.colors.length; i++) {
+      setFlashColor(gameStart.colors[i]);
+      await timeout(1000);
+      setFlashColor("");
+      await timeout(1000);
+      if (i === gameStart.colors.length - 1) {
+        const gamePattern = [...gameStart.colors];
+        setGameStart({
+          ...gameStart,
+          onDisplay: false,
+          gameStarted: true,
+          userColors: gamePattern.reverse(),
+        });
+      }
+    }  
+  }
 
- 
+
+    async function cardClickHandle(color) {
+      if (!gameStart.onDisplay && gameStart.gameStarted) {
+        const copyGamePattern = [...gameStart.gamePattern];
+        const lastColor = copyGamePattern.pop();
+        setFlashColor(color);
+  
+        if (color === lastColor) {
+          if (copyGamePattern.length) {
+            setGameStart({ ...gameStart, gamePattern: copyGamePattern });
+          } else {
+            await timeout(1000);
+            setGameStart({
+              ...gameStart,
+              onDisplay: true,
+              gameStarted: false,
+              score: gameStart.colors.length,
+              gamePattern: [],
+            });
+          }
+        } 
+      }
+      else {
+          await timeout(1000);
+          setGameStart({ ...gameStart, score: gameStart.colors.length });
+        }
+      await timeout(1000);
+      setFlashColor("");
+
+    }
+    
+    
+    function closeHandle() {
+        setisOn(false);
+      }
+    
+
+
 
   return (
     
@@ -67,6 +128,12 @@ function App() {
       <Header
       text={header} />
       <div>
+      {isOn && !gameStart.onDisplay && !gameStart.gamePattern && gameStart.score && (
+          <div className="lost">
+            <div>FinalScore: {gameStart.score}</div>
+            <button onClick={closeHandle}>Close</button>
+          </div>
+        )}
       { !isOn && !gameStart.score && (<button className='start-button' type='button' onClick={startGame}>
             Start Game
         </button>)}
@@ -80,9 +147,9 @@ function App() {
       </h1>
       {buttonColors.map((v, i) => (
         <Box 
-          //  onClick={() => {
-          //   cardClickHandle(v);
-          //       }}
+           onClick={() => {
+            cardClickHandle(v);
+                }}
             flash={flashColor === v}
             color={v} />
       ))
@@ -91,6 +158,6 @@ function App() {
     </div>
    
   );
-}
+  }
 
 export default App;
