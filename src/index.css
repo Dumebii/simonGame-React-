@@ -23,19 +23,19 @@ h1 {
   cursor: pointer;
 }
 
-.box1 {
+.red {
   background-color: red;
 }
 
-.box2 {
+.green {
   background-color: darkgreen;
 }
 
-.box3 {
+.orange {
   background-color: orange;
 }
 
-.box4 {
+.magenta {
   background-color: magenta;
 }
 
@@ -61,4 +61,20 @@ h1 {
   background-color: gold;
   border-radius: 50px;
   border: 2px solid red;
+}
+
+.flash.flash {
+  border: 3px solid white;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.score {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background-color: black;
+  border-radius: 50%;
+  line-height: 100px;
+  font-size: 50px;
 }
